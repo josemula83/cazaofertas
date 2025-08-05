@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://cazaofertas.onrender.com";
 
 function login() {
   const username = document.getElementById("username").value;
