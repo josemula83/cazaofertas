@@ -35,7 +35,7 @@ app.post("/search", async (req, res) => {
 });
 
 app.post("/save-link", (req, res) => {
-  const { title, url, category, discount, asin, price } = req.body;
+  const { id, title, url, category, discount, asin, price} = req.body;
   db.run(
     "INSERT INTO links (title, url, category, discount, asin, price) VALUES (?, ?, ?, ?, ?, ?)",
     [title, url, category, discount, asin, price],
