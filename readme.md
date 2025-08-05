@@ -110,6 +110,24 @@ Este proyecto es una demostración funcional sin fines comerciales. No está afi
 
 ---
 
+## 🔒 Política de privacidad
+
+Esta web no recopila ni almacena información personal de los usuarios visitantes. No se utilizan cookies ni se realiza seguimiento individualizado. Todos los productos se obtienen automáticamente a través de la API de Amazon y no implican la recopilación de datos sensibles.
+
+- No se utiliza almacenamiento local ni base de datos del lado del usuario.
+- La interacción con enlaces de Amazon se realiza de forma directa a su plataforma.
+- Esta web no solicita registro, login, ni datos de contacto al visitante.
+
+---
+
+Este proyecto es una demostración funcional sin fines comerciales. No está afiliado oficialmente con Amazon.
+
+- Correo de contacto: contacto@cazaofertas.es
+- Responsable del sitio: Jose Ferrandez Mula
+- Este sitio participa en el programa de afiliados de Amazon. Los productos se muestran automáticamente y pueden incluir enlaces con código de afiliado.
+
+---
+
 ## ✨ Créditos
 - Diseñado y desarrollado por Jose Ferrandez Mula
 - Asistido por ChatGPT para generación estructural y diseño técnico
