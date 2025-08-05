@@ -12,6 +12,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Ruta raíz de prueba (verificación desde navegador)
+app.get("/", (req, res) => {
+  res.send("✅ Backend CazaOfertas operativo");
+});
+
+// Login básico
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (
@@ -24,6 +30,7 @@ app.post("/login", (req, res) => {
   }
 });
 
+// Buscar productos en Amazon
 app.post("/search", async (req, res) => {
   try {
     const results = await searchAmazonProducts(req.body);
@@ -34,8 +41,14 @@ app.post("/search", async (req, res) => {
   }
 });
 
+// Guardar producto
 app.post("/save-link", (req, res) => {
-  const { id, title, url, category, discount, asin, price} = req.body;
+  const { title, url, category, discount, asin, price } = req.body;
+
+  if (!title || !url || !category || asin === undefined || price === undefined) {
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
+  }
+
   db.run(
     "INSERT INTO links (title, url, category, discount, asin, price) VALUES (?, ?, ?, ?, ?, ?)",
     [title, url, category, discount, asin, price],
@@ -46,6 +59,7 @@ app.post("/save-link", (req, res) => {
   );
 });
 
+// Obtener todos los enlaces públicos
 app.get("/public-links", (req, res) => {
   db.all("SELECT * FROM links", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -53,6 +67,7 @@ app.get("/public-links", (req, res) => {
   });
 });
 
+// Validación de productos cada hora o bajo demanda
 app.post("/validate-links", async (req, res) => {
   db.all("SELECT id, asin, price FROM links", [], async (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -89,15 +104,10 @@ setInterval(() => {
 
     invalid.forEach((row) => {
       db.run("DELETE FROM links WHERE id = ?", [row.id], (delErr) => {
-        if (!delErr) console.log(`Enlace eliminado automáticamente: ID ${row.id}`);
+        if (!delErr) console.log(`❌ Eliminado: ID ${row.id}`);
       });
     });
   });
-}, 1000 * 60 * 60); // cada hora
+}, 1000 * 60 * 60); // Cada hora
 
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
-
-
-app.get("/", (req, res) => {
-  res.send("✅ Backend CazaOfertas operativo");
-});
