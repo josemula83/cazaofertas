@@ -1,4 +1,4 @@
-const API = "https://cazaofertas.onrender.com";
+const API = "https://cazaofertas-backend.onrender.com"; // Reemplaza con tu URL real si cambia
 
 function login() {
   const username = document.getElementById("username").value;
@@ -22,6 +22,24 @@ function login() {
     });
 }
 
+function logout() {
+  localStorage.removeItem("adminLoggedIn");
+  document.getElementById("adminSection").style.display = "none";
+  document.getElementById("logoutSection").style.display = "none";
+  document.getElementById("loginSection").style.display = "flex";
+}
+
+function checkSession() {
+  const isLogged = localStorage.getItem("adminLoggedIn") === "true";
+  document.getElementById("loginSection").style.display = isLogged ? "none" : "flex";
+  document.getElementById("adminSection").style.display = isLogged ? "block" : "none";
+  document.getElementById("logoutSection").style.display = isLogged ? "block" : "none";
+}
+
+window.onload = () => {
+  checkSession();
+};
+
 function searchProducts() {
   const keyword = document.getElementById("keyword").value;
   const category = document.getElementById("category").value;
@@ -31,7 +49,7 @@ function searchProducts() {
   fetch(`${API}/search`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ keyword, category, discount, primeOnly })
+    body: JSON.stringify({ keyword, category, discount, primeOnly }),
   })
     .then((res) => res.json())
     .then((products) => {
@@ -46,7 +64,8 @@ function searchProducts() {
           <a href='${p.url}' target='_blank' class='text-blue-600 hover:underline'>Ver producto</a>
           <p class='text-sm text-gray-600 mt-1'>Categoría: ${p.category} | Descuento: ${p.discount}%</p>
           <p class='text-sm text-gray-500 mt-1'>Prime: ${p.prime ? "Sí" : "No"}</p>
-          <button onclick='saveLink("${p.title}", "${p.url}", "${p.category}", ${p.discount}, "${p.asin}", ${p.price})' class='mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded'>Guardar</button>`;
+          <button onclick='saveLink("${p.title}", "${p.url}", "${p.category}", ${p.discount}, "${p.asin}", ${p.price})' class='mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded'>Guardar</button>
+        `;
         results.appendChild(card);
       });
     });
@@ -64,24 +83,6 @@ function saveLink(title, url, category, discount, asin, price) {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  if (window.location.pathname.includes("index.html")) {
-    fetch(`${API}/validate-links`, { method: "POST" })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(`Validación automática: ${data.removed} productos eliminados por falta de stock o cambio de precio.`);
-      });
-  }
-});
-
-function validateStoredLinks() {
-  fetch(`${API}/validate-links`, { method: "POST" })
-    .then((res) => res.json())
-    .then((data) => {
-      alert(`Validación completada. Se eliminaron ${data.removed} productos no disponibles.`);
-    });
-}
-
 function extractASIN(url) {
   const asinMatch = url.match(/(?:dp|gp\/product)\/([A-Z0-9]{10})/);
   return asinMatch ? asinMatch[1] : null;
@@ -90,7 +91,7 @@ function extractASIN(url) {
 function importFromAmazonUrl() {
   const url = document.getElementById("amazonUrl").value.trim();
   const asin = extractASIN(url);
-  const tag = "cazaofertas-20"; // 🔁 Sustituye por tu tag real
+  const tag = "cazaofertas-20"; // Reemplaza por tu código real
 
   if (!asin) {
     document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
@@ -114,7 +115,7 @@ function saveImportedLink(asin, url) {
   fetch(`${API}/save-link`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, url, category, discount, asin, price })
+    body: JSON.stringify({ title, url, category, discount, asin, price }),
   })
     .then((res) => res.json())
     .then((data) => {
