@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,17 +8,26 @@
   <title>Panel de Administración - CazaOfertas</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 </head>
+
 <body class="bg-gray-100 text-gray-900 font-sans">
   <header class="bg-blue-800 text-white py-4 shadow">
     <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
       <img src="logo-cazaofertas.png" alt="CazaOfertas logo" class="h-12 mr-4" />
+      <img src="logo-cazaofertas.svg" alt="CazaOfertas" class="h-12 mr-4" />
       <div>
         <h1 class="text-3xl font-bold tracking-wide">CazaOfertas</h1>
         <p class="text-sm">Panel privado para gestionar productos</p>
       </div>
       <div id="logoutSection" style="display:none">
-        <button onclick="logout()" class="bg-white text-blue-800 font-semibold px-4 py-2 rounded hover:bg-gray-100">Cerrar sesión</button>
+        <button onclick="logout()"
+          class="bg-white text-blue-800 font-semibold px-4 py-2 rounded hover:bg-gray-100">Cerrar sesión</button>
       </div>
+      <picture>
+        <!-- Logo para pantallas pequeñas -->
+        <source media="(max-width: 640px)" srcset="assets/logo-vertical.png">
+        <!-- Logo por defecto (horizontal) -->
+        <img src="assets/logo-horizontal.png" alt="CazaOfertas logo" class="h-12" />
+      </picture>
     </div>
   </header>
 
@@ -25,7 +35,8 @@
     <div id="loginSection" class="flex flex-col sm:flex-row gap-2 mb-6 justify-center">
       <input type="text" id="username" placeholder="Usuario" class="border p-2 rounded w-full sm:w-60" />
       <input type="password" id="password" placeholder="Contraseña" class="border p-2 rounded w-full sm:w-60" />
-      <button onclick="login()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded">Login</button>
+      <button onclick="login()"
+        class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded">Login</button>
     </div>
 
     <div id="adminSection" style="display:none">
@@ -50,7 +61,9 @@
           <option value="fashion">Moda</option>
           <option value="home">Hogar</option>
         </select>
-        <button onclick="searchProducts()" class="col-span-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">Buscar productos</button>
+        <button onclick="searchProducts()"
+          class="col-span-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">Buscar
+          productos</button>
       </div>
 
       <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -82,4 +95,5 @@
   </script>
   <script src="scripts.js"></script>
 </body>
+
 </html>
