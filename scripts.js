@@ -82,3 +82,48 @@ function validateStoredLinks() {
     });
 }
 
+function extractASIN(url) {
+  const asinMatch = url.match(/(?:dp|gp\/product)\/([A-Z0-9]{10})/);
+  return asinMatch ? asinMatch[1] : null;
+}
+
+function importFromAmazonUrl() {
+  const url = document.getElementById("amazonUrl").value.trim();
+  const asin = extractASIN(url);
+  const tag = "cazaofertas-20"; // 🔁 Sustituye por tu tag real
+
+  if (!asin) {
+    document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
+    return;
+  }
+
+  const shortLink = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
+  document.getElementById("importResult").innerHTML = `
+    <p><strong>ASIN:</strong> ${asin}</p>
+    <p><strong>Enlace de afiliado:</strong> <a href="${shortLink}" class="text-blue-600 underline" target="_blank">${shortLink}</a></p>
+    <button onclick="saveImportedLink('${asin}', '${shortLink}')" class="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Guardar enlace</button>
+  `;
+}
+
+function saveImportedLink(asin, url) {
+  const title = `Producto importado (${asin})`;
+  const category = "manual";
+  const discount = 0;
+  const price = 0;
+
+  fetch(`${API}/save-link`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, url, category, discount, asin, price })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Producto guardado correctamente.");
+        document.getElementById("importResult").innerHTML = "";
+        document.getElementById("amazonUrl").value = "";
+      } else {
+        alert("Error al guardar.");
+      }
+    });
+}

@@ -21,12 +21,12 @@
         <button onclick="logout()"
           class="bg-white text-blue-800 font-semibold px-4 py-2 rounded hover:bg-gray-100">Cerrar sesión</button>
       </div>
-          <picture>
-  <!-- Logo para pantallas pequeñas -->
-  <source media="(max-width: 640px)" srcset="assets/logo-vertical.png">
-  <!-- Logo por defecto (horizontal) -->
-  <img src="assets/logo-horizontal.png" alt="CazaOfertas logo" class="h-12" />
-  </picture>
+      <picture>
+        <!-- Logo para pantallas pequeñas -->
+        <source media="(max-width: 640px)" srcset="assets/logo-vertical.png">
+        <!-- Logo por defecto (horizontal) -->
+        <img src="assets/logo-horizontal.png" alt="CazaOfertas logo" class="h-12" />
+      </picture>
     </div>
   </header>
 
@@ -64,6 +64,17 @@
           class="col-span-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">Buscar
           productos</button>
       </div>
+      <div class="my-8 border-t pt-6">
+        <h3 class="text-lg font-bold mb-2">Importar producto manualmente</h3>
+        <div class="flex flex-col sm:flex-row gap-2 items-center">
+          <input id="amazonUrl" type="text" placeholder="Pega aquí la URL del producto de Amazon"
+            class="border p-2 rounded w-full sm:w-2/3" />
+          <button onclick="importFromAmazonUrl()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Importar</button>
+        </div>
+        <div id="importResult" class="mt-4 text-sm text-gray-700"></div>
+      </div>
+
 
       <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
