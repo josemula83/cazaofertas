@@ -100,6 +100,16 @@ Abre `frontend/index.html` y `frontend/admin.html` con Live Server o `npx serve`
 
 ---
 
+## 📩 Contacto y aviso legal
+
+Este proyecto es una demostración funcional sin fines comerciales. No está afiliado oficialmente con Amazon.
+
+- Correo de contacto: contacto@cazaofertas.es
+- Responsable del sitio: Jose Ferrandez Mula
+- Este sitio participa en el programa de afiliados de Amazon. Los productos se muestran automáticamente y pueden incluir enlaces con código de afiliado.
+
+---
+
 ## ✨ Créditos
 - Diseñado y desarrollado por Jose Ferrandez Mula
 - Asistido por ChatGPT para generación estructural y diseño técnico
