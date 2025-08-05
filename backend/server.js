@@ -96,3 +96,8 @@ setInterval(() => {
 }, 1000 * 60 * 60); // cada hora
 
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
+
+
+app.get("/", (req, res) => {
+  res.send("✅ Backend CazaOfertas operativo");
+});
