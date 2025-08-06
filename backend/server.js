@@ -114,6 +114,3 @@ app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
 
 
 
-app.get("/test-save", (req, res) => {
-  res.send("✅ Ruta /save-link está incluida en server.js");
-});
