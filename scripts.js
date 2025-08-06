@@ -1,4 +1,4 @@
-const API = "https://cazaofertas-backend.onrender.com"; // Reemplaza con tu URL real si cambia
+const API = "https://cazaofertas-api.onrender.com"; // Reemplaza con tu URL real si cambia
 
 function login() {
   const username = document.getElementById("username").value;
