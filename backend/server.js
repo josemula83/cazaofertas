@@ -27,12 +27,15 @@ app.get("/", (req, res) => {
 
 // Ruta de login segura con variables de entorno
 app.post("/login", (req, res) => {
+  console.log("📥 Se recibió una petición POST en /login");
   console.log(">> Intento de login:", req.body);  // DEBUG
   const { username, password } = req.body;
 
   if (
-    username === process.env.ADMIN_USER &&
-    password === process.env.ADMIN_PASS
+ //   username === process.env.ADMIN_USER &&
+      username === "admin"
+ //   password === process.env.ADMIN_PASS
+      password === "admin123"
   ) {
     res.json({ success: true });
   } else {
