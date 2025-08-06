@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -7,7 +8,7 @@ const { searchAmazonProducts, validateProducts } = require("./amazon");
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,9 +18,19 @@ app.get("/", (req, res) => {
   res.send("✅ Backend CazaOfertas operativo");
 });
 
-// Login básico
+// Middlewares
+app.use(cors());
+app.use(bodyParser.json());
+
+// Ruta básica de prueba
+app.get("/", (req, res) => {
+  res.send("✅ Backend CazaOfertas operativo");
+});
+
+// Ruta de login segura con variables de entorno
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
+
   if (
     username === process.env.ADMIN_USER &&
     password === process.env.ADMIN_PASS
@@ -112,5 +123,9 @@ setInterval(() => {
 
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
 
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+});
 
 
