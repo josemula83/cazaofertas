@@ -23,7 +23,7 @@
     <div id="loginSection" class="flex flex-col sm:flex-row gap-2 mb-6 justify-center">
       <input type="text" id="username" placeholder="Usuario" class="border p-2 rounded w-full sm:w-60" />
       <input type="password" id="password" placeholder="Contraseña" class="border p-2 rounded w-full sm:w-60" />
-      <button onclick="login()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded">Login</button>
+      <button id="loginBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded">Login</button>
     </div>
 
     <div id="adminSection" style="display:none">
@@ -106,6 +106,12 @@
       document.getElementById("adminSection").style.display = "none";
       document.getElementById("logoutSection").style.display = "none";
     }
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const loginBtn = document.getElementById("loginBtn");
+      if (loginBtn) loginBtn.addEventListener("click", login);
+    });
   </script>
   <script src="scripts.js"></script>
 </body>
