@@ -18,9 +18,7 @@ app.get("/", (req, res) => {
   res.send("✅ Backend CazaOfertas operativo");
 });
 
-// Middlewares
-app.use(cors());
-app.use(bodyParser.json());
+
 
 // Ruta básica de prueba
 app.get("/", (req, res) => {
@@ -29,6 +27,7 @@ app.get("/", (req, res) => {
 
 // Ruta de login segura con variables de entorno
 app.post("/login", (req, res) => {
+  console.log(">> Intento de login:", req.body);  // DEBUG
   const { username, password } = req.body;
 
   if (
