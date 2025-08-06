@@ -33,7 +33,7 @@ app.post("/login", (req, res) => {
 
   if (
  //   username === process.env.ADMIN_USER &&
-      username === "admin"
+      username === "admin" &&
  //   password === process.env.ADMIN_PASS
       password === "admin123"
   ) {
