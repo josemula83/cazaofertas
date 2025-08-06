@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
   <title>Panel de Administración - CazaOfertas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans">
+<body class="bg-gradient-to-b from-white to-gray-100 text-gray-900 font-sans">
   <header class="bg-blue-800 text-white py-4 shadow">
     <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold tracking-wide">CazaOfertas</h1>
-        <p class="text-sm">Panel privado para gestionar productos</p>
+      <div class="flex items-center gap-4">
+        <img src="logo-cazaofertas.png" alt="CazaOfertas logo" class="h-10" />
+        <h1 class="text-2xl font-bold tracking-wide">Panel Admin</h1>
       </div>
       <div id="logoutSection" style="display:none">
         <button onclick="logout()" class="bg-white text-blue-800 font-semibold px-4 py-2 rounded hover:bg-gray-100">Cerrar sesión</button>
@@ -27,45 +27,49 @@
     </div>
 
     <div id="adminSection" style="display:none">
-      <h2 class="text-xl font-semibold text-center mb-4">Buscar productos en Amazon</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <input type="text" id="keyword" placeholder="Nombre o palabra clave" class="border p-2 rounded w-full" />
-        <select id="discountRange" class="border p-2 rounded w-full">
-          <option value="">Cualquier descuento</option>
-          <option value="10">10% o más</option>
-          <option value="20">20% o más</option>
-          <option value="30">30% o más</option>
-          <option value="50">50% o más</option>
-        </select>
-        <select id="primeOnly" class="border p-2 rounded w-full">
-          <option value="">Todos</option>
-          <option value="true">Solo Prime</option>
-        </select>
-        <select id="category" class="border p-2 rounded w-full">
-          <option value="">Todas las categorías</option>
-          <option value="electronics">Electrónica</option>
-          <option value="books">Libros</option>
-          <option value="fashion">Moda</option>
-          <option value="home">Hogar</option>
-        </select>
-        <button onclick="searchProducts()" class="col-span-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">Buscar productos</button>
-      </div>
+      <section class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-center">Buscar productos en Amazon</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <input type="text" id="keyword" placeholder="Palabra clave" class="border p-2 rounded w-full" />
+          <select id="discountRange" class="border p-2 rounded w-full">
+            <option value="">Cualquier descuento</option>
+            <option value="10">10% o más</option>
+            <option value="20">20% o más</option>
+            <option value="30">30% o más</option>
+            <option value="50">50% o más</option>
+          </select>
+          <select id="primeOnly" class="border p-2 rounded w-full">
+            <option value="">Todos</option>
+            <option value="true">Solo Prime</option>
+          </select>
+          <select id="category" class="border p-2 rounded w-full">
+            <option value="">Todas las categorías</option>
+            <option value="electronics">Electrónica</option>
+            <option value="books">Libros</option>
+            <option value="fashion">Moda</option>
+            <option value="home">Hogar</option>
+          </select>
+        </div>
+        <button onclick="searchProducts()" class="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded w-full">Buscar</button>
+      </section>
 
-      <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-      <div class="my-8 border-t pt-6">
-        <h3 class="text-lg font-bold mb-2">Importar producto manualmente</h3>
-        <div class="flex flex-col sm:flex-row gap-2 items-center">
-          <input id="amazonUrl" type="text" placeholder="Pega aquí la URL del producto de Amazon" class="border p-2 rounded w-full sm:w-2/3" />
+      <section class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <h3 class="text-lg font-bold mb-4">Importar producto manualmente</h3>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="amazonUrl" type="text" placeholder="URL del producto de Amazon" class="border p-2 rounded w-full" />
           <button onclick="importFromAmazonUrl()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Importar</button>
         </div>
         <div id="importResult" class="mt-4 text-sm text-gray-700"></div>
-      </div>
+      </section>
+
+      <section>
+        <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
     </div>
   </main>
 
-  <footer class="bg-blue-800 text-white text-center text-sm py-4 mt-10">
-    © 2025 CazaOfertas.es - Administrador
+  <footer class="bg-blue-800 text-white py-6 text-center text-sm">
+    <p>© 2025 CazaOfertas.es - Área privada</p>
   </footer>
 
   <script src="scripts.js"></script>
