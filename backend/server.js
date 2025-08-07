@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { searchAmazonProducts } = require("./amazon");
 
+const fetch = require("node-fetch");
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -43,3 +45,11 @@ app.post("/search", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
+
+// Auto-ping para evitar que Render duerma el servidor (cada 5 minutos)
+setInterval(() => {
+  fetch("https://cazaofertas-backend.onrender.com/")
+    .then(res => res.text())
+    .then(text => console.log("📡 Auto-ping exitoso:", text))
+    .catch(err => console.error("⚠️ Error en auto-ping:", err.message));
+}, 1000 * 60 * 5); // cada 5 minutos
