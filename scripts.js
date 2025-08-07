@@ -89,10 +89,11 @@ function extractASIN(url) {
 }
 
 function importFromAmazonUrl() {
+  
   const url = document.getElementById("amazonUrl").value.trim();
   const asin = extractASIN(url);
-  //const tag = document.getElementById("username").value; // Reemplaza por tu código real
-  const tag = document.getElementById("associate_tag").value; // Reemplaza por tu código real
+  const tag = "cazaoferta0e3-20"; // Reemplaza por tu código real
+  
 
   if (!asin) {
     document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
