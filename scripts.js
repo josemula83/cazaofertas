@@ -169,3 +169,30 @@ function deleteLink(id) {
       }
     });
 }
+
+function loadLinks() {
+  fetch(`${API}/public-links`)
+    .then((res) => res.json())
+    .then((links) => {
+      const cat = document.getElementById("filterCategory")?.value || "";
+      const disc = parseInt(document.getElementById("filterDiscount")?.value || "0");
+      const container = document.getElementById("linksContainer");
+      container.innerHTML = "";
+
+      const filtered = links.filter(l =>
+        (!cat || l.category.includes(cat)) &&
+        l.discount >= disc
+      );
+
+      filtered.forEach((link) => {
+        const card = document.createElement("div");
+        card.className = "rounded-lg shadow-md border p-4 bg-white";
+        card.innerHTML = `
+          <h2 class="font-semibold text-lg mb-2">${link.title}</h2>
+          <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline">Ver producto</a>
+          <p class="text-sm text-gray-600 mt-1">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
+        `;
+        container.appendChild(card);
+      });
+    });
+}
