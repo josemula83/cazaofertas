@@ -42,6 +42,7 @@ window.onload = () => {
   checkSession();
   document.getElementById("loginBtn").addEventListener("click", login);
   document.getElementById("searchBtn").addEventListener("click", searchProducts);
+  document.getElementById("manualImportBtn").addEventListener("click", saveManualProduct);
 };
 
 function searchProducts() {

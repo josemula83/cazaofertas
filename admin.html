@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Admin - CazaOfertas</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
+
 <body class="bg-gray-100">
 
   <header class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center">
@@ -50,25 +52,29 @@
           </select>
         </div>
         <div class="mt-4">
-          <button id="searchBtn" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-semibold">Buscar</button>
+          <button id="searchBtn"
+            class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-semibold">Buscar</button>
         </div>
         <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"></div>
       </div>
 
       <!-- Agregar producto manual -->
-      <div class="bg-white p-6 rounded shadow">
-        <h2 class="text-lg font-semibold mb-4">Añadir producto manualmente</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input id="manualTitle" type="text" placeholder="Nombre del producto" class="border p-2 rounded">
-          <input id="manualUrl" type="text" placeholder="URL del producto" class="border p-2 rounded">
-          <input id="manualCategory" type="text" placeholder="Categoría" class="border p-2 rounded">
-          <input id="manualPrice" type="number" placeholder="Precio (€)" class="border p-2 rounded">
-          <input id="manualDiscount" type="number" placeholder="Descuento (%)" class="border p-2 rounded">
+      <div class="bg-white shadow p-4 rounded mt-6">
+        <h3 class="font-semibold mb-3">Añadir producto manualmente</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <input id="manualTitle" type="text" placeholder="Título del producto" class="border p-2 rounded" />
+          <input id="manualUrl" type="text" placeholder="URL del producto de Amazon" class="border p-2 rounded" />
+          <input id="manualCategory" type="text" placeholder="Categoría" class="border p-2 rounded" />
+          <input id="manualPrice" type="number" step="0.01" placeholder="Precio (€)" class="border p-2 rounded" />
+          <input id="manualDiscount" type="number" step="1" min="0" max="100" placeholder="Descuento (%)"
+            class="border p-2 rounded" />
         </div>
-        <div class="mt-4">
-          <button id="manualImportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Guardar producto</button>
-        </div>
+        <button id="manualImportBtn" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Guardar
+          producto</button>
       </div>
+
+      <div id="importResult" class="mt-4"></div>
+
 
       <!-- Productos guardados -->
       <div class="bg-white p-6 rounded shadow mt-8">
@@ -86,4 +92,5 @@
 
   <script src="scripts.js"></script>
 </body>
+
 </html>
