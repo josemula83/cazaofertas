@@ -1,4 +1,4 @@
-const API = "https://cazaofertas.onrender.com"; // Reemplaza con tu URL real si cambia
+const API = "https://cazaofertas-backend.onrender.com";
 
 function login() {
   const username = document.getElementById("username").value;
@@ -16,6 +16,7 @@ function login() {
         document.getElementById("loginSection").style.display = "none";
         document.getElementById("adminSection").style.display = "block";
         document.getElementById("logoutSection").style.display = "block";
+        loadSavedLinks();
       } else {
         alert("Login incorrecto");
       }
@@ -34,12 +35,13 @@ function checkSession() {
   document.getElementById("loginSection").style.display = isLogged ? "none" : "flex";
   document.getElementById("adminSection").style.display = isLogged ? "block" : "none";
   document.getElementById("logoutSection").style.display = isLogged ? "block" : "none";
-
-  if (isLogged) loadSavedLinks(); // Cargar lista si ya hay sesión
+  if (isLogged) loadSavedLinks();
 }
 
 window.onload = () => {
   checkSession();
+  document.getElementById("loginBtn").addEventListener("click", login);
+  document.getElementById("searchBtn").addEventListener("click", searchProducts);
 };
 
 function searchProducts() {
@@ -59,14 +61,12 @@ function searchProducts() {
       results.innerHTML = "";
       products.forEach((p) => {
         const card = document.createElement("div");
-        card.className = "rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition duration-200";
+        card.className = "rounded-lg shadow-md border p-4 bg-white";
         card.innerHTML = `
-          <img src='${p.image || "https://via.placeholder.com/150"}' alt='${p.title}' class='w-full h-auto mb-2 rounded'>
           <h2 class='font-semibold text-lg mb-2'>${p.title}</h2>
           <a href='${p.url}' target='_blank' class='text-blue-600 hover:underline'>Ver producto</a>
           <p class='text-sm text-gray-600 mt-1'>Categoría: ${p.category} | Descuento: ${p.discount}%</p>
-          <p class='text-sm text-gray-500 mt-1'>Prime: ${p.prime ? "Sí" : "No"}</p>
-          <button onclick='saveLink("${p.title}", "${p.url}", "${p.category}", ${p.discount}, "${p.asin}", ${p.price})' class='mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded'>Guardar</button>
+          <button onclick='saveLink("${p.title}", "${p.url}", "${p.category}", ${p.discount}, "${p.asin}", ${p.price})' class='mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded'>Guardar</button>
         `;
         results.appendChild(card);
       });
@@ -91,11 +91,9 @@ function extractASIN(url) {
 }
 
 function importFromAmazonUrl() {
-  
   const url = document.getElementById("amazonUrl").value.trim();
   const asin = extractASIN(url);
-  const tag = "cazaoferta0e3-20"; // Reemplaza por tu código real
-  
+  const tag = "cazaofertas-20";
 
   if (!asin) {
     document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
@@ -127,36 +125,12 @@ function saveImportedLink(asin, url) {
         alert("Producto guardado correctamente.");
         document.getElementById("importResult").innerHTML = "";
         document.getElementById("amazonUrl").value = "";
+        loadSavedLinks();
       } else {
         alert("Error al guardar.");
       }
     });
 }
-
-function loadLinks() {
-  fetch(`${API}/public-links`)
-    .then((res) => res.json())
-    .then((links) => {
-      const cat = document.getElementById("filterCategory").value;
-      const disc = parseInt(document.getElementById("filterDiscount").value || "0");
-      const filtered = links.filter(l => (!cat || l.category.includes(cat)) && l.discount >= disc);
-
-      const container = document.getElementById("linksContainer");
-      container.innerHTML = "";
-      filtered.forEach((link) => {
-        const card = document.createElement("div");
-        card.className = "rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition duration-200";
-        card.innerHTML = `
-          <img src='${link.image || "https://via.placeholder.com/150"}' alt='${link.title}' class='w-full h-auto mb-2 rounded'>
-          <h2 class='font-semibold text-lg mb-2'>${link.title}</h2>
-          <a href='${link.url}' target='_blank' class='text-blue-600 hover:underline'>Ver producto</a>
-          <p class='text-sm text-gray-600 mt-1'>Categoría: ${link.category} | Descuento: ${link.discount}%</p>
-        `;
-        container.appendChild(card);
-      });
-    });
-}
-
 
 function loadSavedLinks() {
   fetch(`${API}/admin-links`)
@@ -168,14 +142,12 @@ function loadSavedLinks() {
       links.forEach((link) => {
         const card = document.createElement("div");
         card.className = "rounded-lg shadow-md border p-4 bg-white";
-
         card.innerHTML = `
           <h3 class="font-semibold text-lg mb-1">${link.title}</h3>
           <p class="text-sm text-gray-600 mb-2">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
           <a href="${link.url}" target="_blank" class="text-blue-600 underline mb-2 block">Ver en Amazon</a>
           <button onclick="deleteLink(${link.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Eliminar</button>
         `;
-
         container.appendChild(card);
       });
     });
