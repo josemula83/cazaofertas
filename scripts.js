@@ -197,3 +197,6 @@ function loadLinks() {
       });
     });
 }
+
+
+window.saveManualProduct = saveManualProduct;
