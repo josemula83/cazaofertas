@@ -68,7 +68,7 @@ app.get("/public-links", (req, res) => {
 
 // ⏰ Auto-ping para mantener activo el servidor Render
 setInterval(() => {
-  fetch("https://cazaofertas-backend.onrender.com/")
+  fetch("https://cazaofertas.onrender.com")
     .then(res => res.text())
     .then(text => console.log("📡 Auto-ping exitoso:", text))
     .catch(err => console.error("⚠️ Error en auto-ping:", err.message));
