@@ -1,4 +1,4 @@
-const API = "https://cazaofertas-backend.onrender.com";
+const API = "https://cazaofertas.onrender.com";
 
 function login() {
   const username = document.getElementById("username").value;
