@@ -81,7 +81,7 @@ app.delete("/delete-link/:id", (req, res) => {
 });
 
 // 📡 Auto-ping (para mantener vivo el servidor en Render)
-const fetch = require("node-fetch");
+//const fetch = require("node-fetch");
 setInterval(() => {
   fetch("https://cazaofertas.onrender.com")
     .then((res) => res.text())
