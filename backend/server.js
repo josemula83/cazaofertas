@@ -5,8 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { searchAmazonProducts } = require("./amazon");
-
-const fetch = require("node-fetch");
+const db = require("./db");
 
 dotenv.config();
 const app = express();
@@ -30,26 +29,52 @@ app.post("/login", (req, res) => {
   }
 });
 
-// 🔍 Ruta de búsqueda de productos
+// Buscar productos (simulado o real)
 app.post("/search", async (req, res) => {
   try {
     const filters = req.body;
     const results = await searchAmazonProducts(filters);
     res.json(results);
   } catch (error) {
-    console.error("Error en /search:", error.message);
+    console.error("❌ Error en /search:", error.message);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+// Guardar enlace
+app.post("/save-link", (req, res) => {
+  const { title, url, category, discount, asin, price } = req.body;
+  if (!title || !url || !category || asin === undefined || price === undefined) {
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
+  }
+
+  db.run(
+    "INSERT INTO links (title, url, category, discount, asin, price) VALUES (?, ?, ?, ?, ?, ?)",
+    [title, url, category, discount, asin, price],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true });
+    }
+  );
 });
 
-// Auto-ping para evitar que Render duerma el servidor (cada 5 minutos)
+// Obtener enlaces públicos
+app.get("/public-links", (req, res) => {
+  db.all("SELECT * FROM links ORDER BY id DESC", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// ⏰ Auto-ping para mantener activo el servidor Render
 setInterval(() => {
   fetch("https://cazaofertas-backend.onrender.com/")
     .then(res => res.text())
     .then(text => console.log("📡 Auto-ping exitoso:", text))
     .catch(err => console.error("⚠️ Error en auto-ping:", err.message));
 }, 1000 * 60 * 5); // cada 5 minutos
+
+// Inicio del servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+});
