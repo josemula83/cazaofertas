@@ -1,18 +1,25 @@
 const express = require("express");
-const cors = require("cors");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const db = require("./db");
-const amazon = require("./amazon");
 
 dotenv.config();
 const app = express();
+
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "..", "frontend")));
 
-// 🔐 Login simple para panel de administrador
+// 🟢 Ruta principal
+app.get("/", (req, res) => {
+  res.send("Servidor de CazaOfertas activo.");
+});
+
+// 🔐 Login básico
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (
@@ -25,19 +32,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-// 🔍 Buscar productos desde Amazon API (simulado o real)
-app.post("/search", async (req, res) => {
-  try {
-    const { keyword, category, discount, primeOnly } = req.body;
-    const results = await amazon.searchProducts(keyword, category, discount, primeOnly);
-    res.json(results);
-  } catch (error) {
-    console.error("Error al buscar en Amazon API:", error.message);
-    res.status(500).json({ error: "Error al buscar en Amazon API" });
-  }
-});
-
-// 💾 Guardar enlace (desde búsqueda o manual)
+// 💾 Guardar nuevo producto
 app.post("/save-link", (req, res) => {
   const { title, url, category, discount, asin, price } = req.body;
 
@@ -55,41 +50,32 @@ app.post("/save-link", (req, res) => {
   );
 });
 
-// 🔎 Cargar productos públicos (visibles en la web)
-app.get("/public-links", (req, res) => {
-  db.all("SELECT * FROM links", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-// 🔐 Cargar productos para panel de administración
+// 📥 Obtener todos los enlaces para administración
 app.get("/admin-links", (req, res) => {
-  db.all("SELECT * FROM links ORDER BY id DESC", (err, rows) => {
+  db.all("SELECT * FROM links ORDER BY id DESC", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
 
-// 🗑 Eliminar producto
+// ❌ Eliminar producto
 app.delete("/delete-link/:id", (req, res) => {
   const id = req.params.id;
-  db.run("DELETE FROM links WHERE id = ?", [id], function (err) {
+  db.run("DELETE FROM links WHERE id = ?", [id], (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
   });
 });
 
-// 📡 Auto-ping (para mantener vivo el servidor en Render)
-//const fetch = require("node-fetch");
+// 🔁 Auto-ping para mantener Render activo (sin usar node-fetch)
 setInterval(() => {
   fetch("https://cazaofertas.onrender.com")
     .then((res) => res.text())
     .then(() => console.log("📡 Auto-ping exitoso"))
-    .catch((err) => console.error("❌ Auto-ping falló", err));
-}, 5 * 60 * 1000); // cada 5 minutos
+    .catch((err) => console.error("Auto-ping falló:", err));
+}, 5 * 60 * 1000);
 
-// 🚀 Arranque del servidor
+// 🚀 Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });

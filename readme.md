@@ -1,135 +1,138 @@
-# CazaOfertas - Amazon Affiliate WebApp
+# 🛍️ CazaOfertas – Web de afiliados Amazon
 
-**CazaOfertas** es una plataforma web desarrollada con Node.js y HTML/CSS/JS que permite buscar, filtrar y publicar productos de Amazon con enlaces de afiliado.
-
----
-
-## 🚀 Características principales
-- Conexión con la API de Amazon Product Advertising v5
-- Búsqueda por categoría, palabra clave, descuentos, y estado Prime
-- Publicación automática de enlaces afiliados
-- Validación automática de productos (stock y precio)
-- Panel privado de administración (con login)
-- Visualización pública filtrable sin necesidad de registro
+**CazaOfertas** es una plataforma web para promocionar productos de Amazon con descuentos, clasificados por categoría y con enlaces de afiliados. Incluye un panel de administración privado para gestionar manualmente los productos y un frontend público limpio y responsive.
 
 ---
 
-## 🧱 Estructura del proyecto
-```
-amazon-affiliate-webapp/
-├── backend/
-│   ├── server.js          → servidor Node.js con Express
-│   ├── amazon.js          → conexión y consultas a la API de Amazon
-│   ├── db.js              → base de datos SQLite3
-│   └── .env               → credenciales locales (no subir)
-├── frontend/
-│   ├── index.html         → parte pública
-│   ├── admin.html         → panel privado
-│   ├── scripts.js         → lógica JS común
-│   ├── logo-cazaofertas.png
-│   ├── favicon.ico
-│   └── logo-cazaofertas.svg
-├── README.md              → este archivo
-└── package.json
-```
+## 🔧 Tecnologías utilizadas
+
+- **Frontend**: HTML + TailwindCSS + JavaScript Vanilla
+- **Backend**: Node.js con Express
+- **Base de datos**: SQLite
+- **API**: Amazon Product Advertising API (manual por ahora)
+- **Hosting Frontend**: GitHub Pages
+- **Hosting Backend**: Render (auto-ping incluido)
 
 ---
 
-## ⚙️ Cómo ejecutar en local
+## 🧪 Requisitos
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/tu-usuario/amazon-affiliate-webapp.git
-cd amazon-affiliate-webapp
-```
+- Node.js v18+
+- Git
+- Cuenta de Amazon Afiliados
+- Archivo `.env` con usuario y contraseña:
 
-### 2. Instalar dependencias del backend
-```bash
-cd backend
-npm install
-```
-
-### 3. Crear el archivo `.env`
-```
+```env
 ADMIN_USER=admin
-ADMIN_PASS=admin123
-AWS_ACCESS_KEY_ID=xxxx
-AWS_SECRET_ACCESS_KEY=xxxx
-ASSOCIATE_TAG=midominio-20
-```
+ADMIN_PASS=1234
 
-### 4. Ejecutar el backend
-```bash
+.
+├── backend/
+│   ├── server.js
+│   ├── db.js
+│   ├── amazon.js
+│   └── .env
+├── frontend/
+│   ├── index.html
+│   ├── admin.html
+│   ├── scripts.js
+│   └── logo-cazaofertas.svg/png
+└── README.md
+🔐 Panel de administración (admin.html)
+Disponible desde el botón en la web principal.
+
+Funcionalidades:
+Login (usuario desde .env)
+
+Búsqueda de productos por palabra clave, categoría, Prime, descuento.
+
+Importar desde URL de Amazon (ASIN).
+
+Añadir producto manualmente: título, URL, categoría, precio, descuento.
+
+Ver todos los productos guardados.
+
+Eliminar productos con un clic.
+
+🛠️ Rutas del servidor
+Método	Ruta	Descripción
+POST	/login	Autenticación básica por usuario y password
+POST	/save-link	Guarda un nuevo producto
+GET	/admin-links	Lista todos los productos guardados
+DELETE	/delete-link/:id	Elimina un producto por ID
+GET	/	Comprobación de salud del servidor
+
+🔁 Auto-ping Render
+Para evitar que Render suspenda el servidor tras 15 minutos de inactividad, se incluye un setInterval() que hace peticiones cada 5 minutos a https://cazaofertas.onrender.com.
+
+🚀 Despliegue
+Frontend
+Subir carpeta frontend/ a un repositorio GitHub
+
+Activar GitHub Pages desde la configuración del repositorio
+
+Elegir carpeta main > root
+
+Backend
+Subir carpeta backend/ a un repositorio separado (o mismo si está limpio)
+
+Crear cuenta en https://render.com
+
+Nuevo servicio web (Node.js) → conectar GitHub
+
+Definir build command:
+🔐 Panel de administración (admin.html)
+Disponible desde el botón en la web principal.
+
+Funcionalidades:
+Login (usuario desde .env)
+
+Búsqueda de productos por palabra clave, categoría, Prime, descuento.
+
+Importar desde URL de Amazon (ASIN).
+
+Añadir producto manualmente: título, URL, categoría, precio, descuento.
+
+Ver todos los productos guardados.
+
+Eliminar productos con un clic.
+
+🛠️ Rutas del servidor
+Método	Ruta	Descripción
+POST	/login	Autenticación básica por usuario y password
+POST	/save-link	Guarda un nuevo producto
+GET	/admin-links	Lista todos los productos guardados
+DELETE	/delete-link/:id	Elimina un producto por ID
+GET	/	Comprobación de salud del servidor
+
+🔁 Auto-ping Render
+Para evitar que Render suspenda el servidor tras 15 minutos de inactividad, se incluye un setInterval() que hace peticiones cada 5 minutos a https://cazaofertas.onrender.com.
+
+🚀 Despliegue
+Frontend
+Subir carpeta frontend/ a un repositorio GitHub
+
+Activar GitHub Pages desde la configuración del repositorio
+
+Elegir carpeta main > root
+
+Backend
+Subir carpeta backend/ a un repositorio separado (o mismo si está limpio)
+
+Crear cuenta en https://render.com
+
+Nuevo servicio web (Node.js) → conectar GitHub
+
+Definir build command:
+Definir start command:
 node server.js
-```
+ Enlace de afiliado
+Para cada producto, se genera el enlace con tu código de afiliado en este formato:
 
-### 5. Abrir el frontend
-Abre `frontend/index.html` y `frontend/admin.html` con Live Server o `npx serve`.
-
----
-
-## 🌐 Despliegue
-
-### Frontend con GitHub Pages
-1. Mover archivos de `frontend/` a raíz si es necesario.
-2. En **Settings → Pages**, seleccionar:
-   - Branch: `main`
-   - Carpeta: `/ (root)`
-3. Accede en: `https://tu-usuario.github.io/amazon-affiliate-webapp`
-
-### Backend con Render.com
-1. Crear cuenta en [https://render.com](https://render.com)
-2. Nuevo Web Service → conectar repo
-3. Build command: `npm install`
-4. Start command: `node server.js`
-5. Añadir variables del `.env`
-
----
-
-## 🔐 Acceso administrador
-- URL: `/admin.html`
-- Usuario: `admin`
-- Contraseña: `admin123`
-
----
-
-## 📦 Validación automática
-- Se valida cada hora los productos guardados
-- Se eliminan aquellos con precio cambiado o sin stock
-- También puede ejecutarse manualmente desde el panel admin
-
----
-
-## 📩 Contacto y aviso legal
-
-Este proyecto es una demostración funcional sin fines comerciales. No está afiliado oficialmente con Amazon.
-
-- Correo de contacto: contacto@cazaofertas.es
-- Responsable del sitio: Jose Ferrandez Mula
-- Este sitio participa en el programa de afiliados de Amazon. Los productos se muestran automáticamente y pueden incluir enlaces con código de afiliado.
-
----
-
-## 🔒 Política de privacidad
-
-Esta web no recopila ni almacena información personal de los usuarios visitantes. No se utilizan cookies ni se realiza seguimiento individualizado. Todos los productos se obtienen automáticamente a través de la API de Amazon y no implican la recopilación de datos sensibles.
-
-- No se utiliza almacenamiento local ni base de datos del lado del usuario.
-- La interacción con enlaces de Amazon se realiza de forma directa a su plataforma.
-- Esta web no solicita registro, login, ni datos de contacto al visitante.
-
----
-
-Este proyecto es una demostración funcional sin fines comerciales. No está afiliado oficialmente con Amazon.
-
-- Correo de contacto: contacto@cazaofertas.es
-- Responsable del sitio: Jose Ferrandez Mula
-- Este sitio participa en el programa de afiliados de Amazon. Los productos se muestran automáticamente y pueden incluir enlaces con código de afiliado.
-
----
-
-## ✨ Créditos
-- Diseñado y desarrollado por Jose Ferrandez Mula
-- Asistido por ChatGPT para generación estructural y diseño técnico
-
----
+arduino
+Copiar
+Editar
+https://www.amazon.es/dp/ASIN?tag=TU-CODIGO
+📬 Contacto
+Desarrollado por: Jose Antonio Ferrandez Mula
+Repositorio: https://github.com/josemula83/cazaofertas

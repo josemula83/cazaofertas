@@ -38,13 +38,6 @@ function checkSession() {
   if (isLogged) loadSavedLinks();
 }
 
-window.onload = () => {
-  checkSession();
-  document.getElementById("loginBtn").addEventListener("click", login);
-  document.getElementById("searchBtn").addEventListener("click", searchProducts);
-  document.getElementById("manualImportBtn").addEventListener("click", saveManualProduct);
-};
-
 function searchProducts() {
   const keyword = document.getElementById("keyword").value;
   const category = document.getElementById("category").value;
@@ -133,6 +126,35 @@ function saveImportedLink(asin, url) {
     });
 }
 
+function saveManualProduct() {
+  const title = document.getElementById("manualTitle").value.trim();
+  const url = document.getElementById("manualUrl").value.trim();
+  const category = document.getElementById("manualCategory").value.trim();
+  const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
+  const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
+  const asin = extractASIN(url) || "manual";
+
+  if (!title || !url || !category) {
+    alert("Por favor completa todos los campos obligatorios.");
+    return;
+  }
+
+  fetch(`${API}/save-link`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, url, category, discount, asin, price }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Producto guardado manualmente.");
+        loadSavedLinks();
+      } else {
+        alert("Error al guardar.");
+      }
+    });
+}
+
 function loadSavedLinks() {
   fetch(`${API}/admin-links`)
     .then(res => res.json())
@@ -145,7 +167,7 @@ function loadSavedLinks() {
         card.className = "rounded-lg shadow-md border p-4 bg-white";
         card.innerHTML = `
           <h3 class="font-semibold text-lg mb-1">${link.title}</h3>
-          <p class="text-sm text-gray-600 mb-2">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
+          <p class="text-sm text-gray-600 mb-2">Categoría: ${link.category} | Descuento: ${link.discount}% | Precio: ${link.price}€</p>
           <a href="${link.url}" target="_blank" class="text-blue-600 underline mb-2 block">Ver en Amazon</a>
           <button onclick="deleteLink(${link.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Eliminar</button>
         `;
@@ -171,32 +193,16 @@ function deleteLink(id) {
     });
 }
 
-function loadLinks() {
-  fetch(`${API}/public-links`)
-    .then((res) => res.json())
-    .then((links) => {
-      const cat = document.getElementById("filterCategory")?.value || "";
-      const disc = parseInt(document.getElementById("filterDiscount")?.value || "0");
-      const container = document.getElementById("linksContainer");
-      container.innerHTML = "";
-
-      const filtered = links.filter(l =>
-        (!cat || l.category.includes(cat)) &&
-        l.discount >= disc
-      );
-
-      filtered.forEach((link) => {
-        const card = document.createElement("div");
-        card.className = "rounded-lg shadow-md border p-4 bg-white";
-        card.innerHTML = `
-          <h2 class="font-semibold text-lg mb-2">${link.title}</h2>
-          <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline">Ver producto</a>
-          <p class="text-sm text-gray-600 mt-1">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
-        `;
-        container.appendChild(card);
-      });
-    });
-}
-
-
+// Exponer funciones globalmente para asegurar su disponibilidad
+window.login = login;
+window.logout = logout;
+window.searchProducts = searchProducts;
 window.saveManualProduct = saveManualProduct;
+
+// Ejecutar al cargar
+window.onload = () => {
+  checkSession();
+  document.getElementById("loginBtn")?.addEventListener("click", login);
+  document.getElementById("searchBtn")?.addEventListener("click", searchProducts);
+  document.getElementById("manualImportBtn")?.addEventListener("click", saveManualProduct);
+};
