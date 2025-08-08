@@ -78,3 +78,22 @@ setInterval(() => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
+
+// Obtener todos los enlaces guardados (vista admin)
+app.get("/admin-links", (req, res) => {
+  db.all("SELECT * FROM links ORDER BY id DESC", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Eliminar un enlace por ID
+app.delete("/delete-link/:id", (req, res) => {
+  const id = req.params.id;
+
+  db.run("DELETE FROM links WHERE id = ?", [id], function (err) {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    if (this.changes === 0) return res.status(404).json({ success: false, message: "No encontrado" });
+    res.json({ success: true });
+  });
+});

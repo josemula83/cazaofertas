@@ -34,6 +34,8 @@ function checkSession() {
   document.getElementById("loginSection").style.display = isLogged ? "none" : "flex";
   document.getElementById("adminSection").style.display = isLogged ? "block" : "none";
   document.getElementById("logoutSection").style.display = isLogged ? "block" : "none";
+
+  if (isLogged) loadSavedLinks(); // Cargar lista si ya hay sesión
 }
 
 window.onload = () => {
@@ -152,5 +154,46 @@ function loadLinks() {
         `;
         container.appendChild(card);
       });
+    });
+}
+
+
+function loadSavedLinks() {
+  fetch(`${API}/admin-links`)
+    .then(res => res.json())
+    .then((links) => {
+      const container = document.getElementById("savedLinks");
+      container.innerHTML = "";
+
+      links.forEach((link) => {
+        const card = document.createElement("div");
+        card.className = "rounded-lg shadow-md border p-4 bg-white";
+
+        card.innerHTML = `
+          <h3 class="font-semibold text-lg mb-1">${link.title}</h3>
+          <p class="text-sm text-gray-600 mb-2">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
+          <a href="${link.url}" target="_blank" class="text-blue-600 underline mb-2 block">Ver en Amazon</a>
+          <button onclick="deleteLink(${link.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Eliminar</button>
+        `;
+
+        container.appendChild(card);
+      });
+    });
+}
+
+function deleteLink(id) {
+  if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
+
+  fetch(`${API}/delete-link/${id}`, {
+    method: "DELETE"
+  })
+    .then(res => res.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Producto eliminado");
+        loadSavedLinks();
+      } else {
+        alert("Error al eliminar");
+      }
     });
 }
