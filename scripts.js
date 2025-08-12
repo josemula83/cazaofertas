@@ -87,7 +87,7 @@ function extractASIN(url) {
 function importFromAmazonUrl() {
   const url = document.getElementById("amazonUrl").value.trim();
   const asin = extractASIN(url);
-  const tag = "cazaofertas-20";
+  const tag = "cazaoferta0e3-20";
 
   if (!asin) {
     document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
@@ -128,11 +128,24 @@ function saveImportedLink(asin, url) {
 
 function saveManualProduct() {
   const title = document.getElementById("manualTitle").value.trim();
-  const url = document.getElementById("manualUrl").value.trim();
+  //const url = document.getElementById("manualUrl").value.trim();
+
+  let url = document.getElementById("manualUrl").value.trim();
+  const asin = extractASIN(url) || "manual";
+  const tag = "cazaoferta0e3-20";
+
+  if (asin !== "manual") {
+    url = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
+  }
+
+
+
+
+
   const category = document.getElementById("manualCategory").value.trim();
   const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
   const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
-  const asin = extractASIN(url) || "manual";
+  //const asin = extractASIN(url) || "manual";
 
   if (!title || !url || !category) {
     alert("Por favor completa todos los campos obligatorios.");
@@ -205,4 +218,5 @@ window.onload = () => {
   document.getElementById("loginBtn")?.addEventListener("click", login);
   document.getElementById("searchBtn")?.addEventListener("click", searchProducts);
   document.getElementById("manualImportBtn")?.addEventListener("click", saveManualProduct);
+  loadLinks();
 };
