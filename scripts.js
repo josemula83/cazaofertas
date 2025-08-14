@@ -1,5 +1,6 @@
 const API = "https://cazaofertas.onrender.com";
 
+// Login
 function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -38,6 +39,7 @@ function checkSession() {
   if (isLogged) loadSavedLinks();
 }
 
+// Buscar productos desde backend
 function searchProducts() {
   const keyword = document.getElementById("keyword").value;
   const category = document.getElementById("category").value;
@@ -67,7 +69,26 @@ function searchProducts() {
     });
 }
 
-function saveLink(title, url, category, discount, asin, price) {
+// Guardar manual
+function saveManualProduct() {
+  const title = document.getElementById("manualTitle").value.trim();
+  let url = document.getElementById("manualUrl").value.trim();
+  const category = document.getElementById("manualCategory").value.trim();
+  const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
+  const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
+
+  const asin = extractASIN(url) || "manual";
+  const tag = "cazaoferta0e3-20";
+
+  if (asin !== "manual") {
+    url = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
+  }
+
+  if (!title || !url || !category) {
+    alert("Completa todos los campos");
+    return;
+  }
+
   fetch(`${API}/save-link`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -75,10 +96,17 @@ function saveLink(title, url, category, discount, asin, price) {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.success) alert("Guardado");
+      if (data.success) {
+        alert("Guardado manualmente");
+        loadSavedLinks();
+        loadLinks();
+      } else {
+        alert("Error al guardar");
+      }
     });
 }
 
+// Enlace afiliado desde Amazon
 function extractASIN(url) {
   const asinMatch = url.match(/(?:dp|gp\/product)\/([A-Z0-9]{10})/);
   return asinMatch ? asinMatch[1] : null;
@@ -90,15 +118,15 @@ function importFromAmazonUrl() {
   const tag = "cazaoferta0e3-20";
 
   if (!asin) {
-    document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN de la URL.</p>";
+    document.getElementById("importResult").innerHTML = "<p class='text-red-500'>No se pudo extraer el ASIN.</p>";
     return;
   }
 
   const shortLink = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
   document.getElementById("importResult").innerHTML = `
     <p><strong>ASIN:</strong> ${asin}</p>
-    <p><strong>Enlace de afiliado:</strong> <a href="${shortLink}" class="text-blue-600 underline" target="_blank">${shortLink}</a></p>
-    <button onclick="saveImportedLink('${asin}', '${shortLink}')" class="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Guardar enlace</button>
+    <p><strong>Enlace afiliado:</strong> <a href="${shortLink}" target="_blank">${shortLink}</a></p>
+    <button onclick="saveImportedLink('${asin}', '${shortLink}')" class="bg-green-600 text-white px-4 py-2 rounded mt-2">Guardar enlace</button>
   `;
 }
 
@@ -113,54 +141,51 @@ function saveImportedLink(asin, url) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, url, category, discount, asin, price }),
   })
-    .then((res) => res.json())
+    .then(res => res.json())
     .then((data) => {
       if (data.success) {
-        alert("Producto guardado correctamente.");
+        alert("Producto guardado.");
         document.getElementById("importResult").innerHTML = "";
         document.getElementById("amazonUrl").value = "";
         loadSavedLinks();
       } else {
-        alert("Error al guardar.");
+        alert("Error");
       }
     });
 }
 
-function saveManualProduct() {
-  const title = document.getElementById("manualTitle").value.trim();
-  let url = document.getElementById("manualUrl").value.trim();
-  const category = document.getElementById("manualCategory").value.trim();
-  const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
-  const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
-  const asin = extractASIN(url) || "manual";
-  const tag = "cazaoferta0e3-20";
+// Mostrar productos públicos
+function loadLinks() {
+  fetch(`${API}/public-links`)
+    .then(res => res.json())
+    .then((links) => {
+      const categoryFilter = document.getElementById("filterCategory")?.value.toLowerCase() || "";
+      const discountFilter = parseInt(document.getElementById("filterDiscount")?.value || "0");
+      const container = document.getElementById("linksContainer");
+      if (!container) return;
 
-  if (asin !== "manual") {
-    url = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
-  }
+      container.innerHTML = "";
 
-  if (!title || !url || !category) {
-    alert("Por favor completa todos los campos obligatorios.");
-    return;
-  }
-
-  fetch(`${API}/save-link`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, url, category, discount, asin, price }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        alert("Producto guardado manualmente.");
-        loadSavedLinks?.();
-        loadLinks?.();
-      } else {
-        alert("Error al guardar.");
-      }
+      links
+        .filter(link =>
+          (!categoryFilter || link.category.toLowerCase().includes(categoryFilter)) &&
+          link.discount >= discountFilter
+        )
+        .forEach((link) => {
+          const card = document.createElement("div");
+          card.className = "rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition";
+          card.innerHTML = `
+            <img src="${link.image || 'https://via.placeholder.com/150'}" alt="${link.title}" class="w-full h-auto mb-2 rounded">
+            <h2 class="font-semibold text-lg mb-2">${link.title}</h2>
+            <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline">Ver producto</a>
+            <p class="text-sm text-gray-600 mt-1">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
+          `;
+          container.appendChild(card);
+        });
     });
 }
 
+// Productos guardados para admin
 function loadSavedLinks() {
   fetch(`${API}/admin-links`)
     .then(res => res.json())
@@ -184,7 +209,7 @@ function loadSavedLinks() {
 }
 
 function deleteLink(id) {
-  if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
+  if (!confirm("¿Eliminar producto?")) return;
 
   fetch(`${API}/delete-link/${id}`, {
     method: "DELETE"
@@ -192,7 +217,7 @@ function deleteLink(id) {
     .then(res => res.json())
     .then((data) => {
       if (data.success) {
-        alert("Producto eliminado");
+        alert("Eliminado correctamente");
         loadSavedLinks();
         loadLinks();
       } else {
@@ -201,39 +226,7 @@ function deleteLink(id) {
     });
 }
 
-function loadLinks() {
-  fetch(`${API}/public-links`)
-    .then(res => res.json())
-    .then((links) => {
-      const categoryFilter = document.getElementById("filterCategory")?.value.toLowerCase() || "";
-      const discountFilter = parseInt(document.getElementById("filterDiscount")?.value || "0");
-      const container = document.getElementById("linksContainer");
-      if (!container) return;
-      container.innerHTML = "";
-
-      links
-        .filter(link => 
-          (!categoryFilter || link.category.toLowerCase().includes(categoryFilter)) &&
-          link.discount >= discountFilter
-        )
-        .forEach((link) => {
-          const card = document.createElement("div");
-          card.className = "rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition duration-200";
-          card.innerHTML = `
-            <img src="${link.image || 'https://via.placeholder.com/150'}" alt="${link.title}" class="w-full h-auto mb-2 rounded">
-            <h2 class="font-semibold text-lg mb-2">${link.title}</h2>
-            <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline">Ver producto</a>
-            <p class="text-sm text-gray-600 mt-1">Categoría: ${link.category} | Descuento: ${link.discount}%</p>
-          `;
-          container.appendChild(card);
-        });
-    })
-    .catch(err => {
-      console.error("Error cargando productos:", err);
-    });
-}
-
-// Registro de eventos y funciones
+// Exponer funciones globalmente
 window.login = login;
 window.logout = logout;
 window.searchProducts = searchProducts;
@@ -242,6 +235,6 @@ window.importFromAmazonUrl = importFromAmazonUrl;
 window.saveImportedLink = saveImportedLink;
 
 window.onload = () => {
-  checkSession?.();
+  checkSession();
   loadLinks();
 };
