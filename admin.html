@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Administración - CazaOfertas</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
-
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold mb-4">Panel de Administración</h1>
 
-    <!-- Sección de login -->
+    <!-- Login -->
     <div id="loginSection" class="flex flex-col gap-4 max-w-md mx-auto bg-white shadow p-6 rounded">
       <h2 class="text-xl font-semibold">Iniciar sesión</h2>
       <input id="username" type="text" placeholder="Usuario" class="border rounded p-2 w-full"/>
@@ -19,33 +18,17 @@
       <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
     </div>
 
-    <!-- Sección visible tras login -->
+    <!-- Admin -->
     <div id="adminSection" class="hidden">
-      <!-- Botón logout -->
-      <div id="logoutSection" class="my-4">
-        <button id="logoutBtn" onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Cerrar sesión</button>
+      <div class="my-4">
+        <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Cerrar sesión</button>
       </div>
 
-      <!-- Buscar productos -->
-      <div class="bg-white p-4 rounded shadow mb-6">
-        <h2 class="text-xl font-semibold mb-2">Buscar productos en Amazon</h2>
-        <input id="keyword" type="text" placeholder="Palabra clave" class="border rounded p-2 w-full mb-2"/>
-        <input id="category" type="text" placeholder="Categoría" class="border rounded p-2 w-full mb-2"/>
-        <input id="discountRange" type="number" placeholder="Descuento mínimo (%)" class="border rounded p-2 w-full mb-2"/>
-        <select id="primeOnly" class="border rounded p-2 w-full mb-2">
-          <option value="">¿Solo Prime?</option>
-          <option value="yes">Sí</option>
-          <option value="no">No</option>
-        </select>
-        <button id="searchBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Buscar</button>
-        <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
-      </div>
-
-      <!-- Importar producto desde URL de Amazon -->
+      <!-- Importar por URL -->
       <div class="bg-white p-4 rounded shadow mb-6">
         <h2 class="text-xl font-semibold mb-2">Importar desde URL de Amazon</h2>
         <input id="amazonUrl" type="text" placeholder="Pega aquí la URL del producto de Amazon" class="border rounded p-2 w-full mb-2"/>
-        <button onclick="importFromAmazonUrl()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">Importar</button>
+        <button id="importBtn" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">Importar</button>
         <div id="importResult" class="mt-4"></div>
       </div>
 
@@ -53,14 +36,14 @@
       <div class="bg-white p-4 rounded shadow mb-6">
         <h2 class="text-xl font-semibold mb-2">Agregar producto manualmente</h2>
         <input id="manualTitle" type="text" placeholder="Título del producto" class="border rounded p-2 w-full mb-2"/>
-        <input id="manualUrl" type="text" placeholder="URL del producto en Amazon" class="border rounded p-2 w-full mb-2"/>
+        <input id="manualUrl" type="text" placeholder="URL del producto en Amazon (o página del vendedor)" class="border rounded p-2 w-full mb-2"/>
         <input id="manualCategory" type="text" placeholder="Categoría" class="border rounded p-2 w-full mb-2"/>
         <input id="manualPrice" type="number" step="0.01" placeholder="Precio (€)" class="border rounded p-2 w-full mb-2"/>
         <input id="manualDiscount" type="number" placeholder="Descuento (%)" class="border rounded p-2 w-full mb-2"/>
-        <button id="manualImportBtn" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Guardar producto</button>
+        <button id="manualSaveBtn" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Guardar producto</button>
       </div>
 
-      <!-- Productos guardados -->
+      <!-- Guardados -->
       <div class="bg-white p-4 rounded shadow mb-6">
         <h2 class="text-xl font-semibold mb-2">Productos guardados</h2>
         <div id="savedLinks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>

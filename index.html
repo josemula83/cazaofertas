@@ -2,18 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CazaOfertas - Encuentra tus mejores descuentos en Amazon</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { scroll-behavior: smooth; }
-  </style>
+  <style>body{scroll-behavior:smooth}</style>
 </head>
 <body class="bg-gradient-to-b from-white to-gray-100 text-gray-900 font-sans">
   <header class="bg-blue-800 text-white py-4 shadow">
     <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
       <div class="flex items-center gap-4">
-        <img src="logo-cazaofertas.png" alt="CazaOfertas logo" class="h-10" />
+        <img src="logo-cazaofertas.png" alt="CazaOfertas logo" class="h-10"/>
         <h1 class="text-2xl font-bold tracking-wide">CazaOfertas</h1>
       </div>
       <nav>
@@ -25,20 +23,20 @@
   <main class="max-w-7xl mx-auto px-4 py-10">
     <section class="mb-8 text-center">
       <h2 class="text-3xl font-extrabold text-blue-900 mb-2">Encuentra las mejores ofertas de Amazon</h2>
-      <p class="text-gray-700">Filtra por categoría o descuento mínimo para ver productos seleccionados</p>
+      <p class="text-gray-700">Nada más entrar verás todos los productos. Luego filtra por categoría o descuento.</p>
     </section>
 
     <section class="bg-white rounded-xl shadow-md p-6 mb-10">
       <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-        <input id="filterCategory" type="text" placeholder="Categoría" class="border p-2 rounded w-full sm:w-60" />
-        <input id="filterDiscount" type="number" placeholder="Descuento mínimo (%)" class="border p-2 rounded w-full sm:w-60" />
-        <button onclick="loadLinks()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">Filtrar</button>
+        <input id="filterCategory" type="text" placeholder="Categoría" class="border p-2 rounded w-full sm:w-60"/>
+        <input id="filterDiscount" type="number" placeholder="Descuento mínimo (%)" class="border p-2 rounded w-full sm:w-60"/>
+        <button id="filterBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">
+          Filtrar
+        </button>
       </div>
     </section>
 
-    <section id="linksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Aquí se insertan las tarjetas dinámicamente -->
-    </section>
+    <section id="linksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></section>
   </main>
 
   <footer class="bg-blue-800 text-white py-6 text-center text-sm">
