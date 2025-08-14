@@ -128,24 +128,16 @@ function saveImportedLink(asin, url) {
 
 function saveManualProduct() {
   const title = document.getElementById("manualTitle").value.trim();
-  //const url = document.getElementById("manualUrl").value.trim();
-
   let url = document.getElementById("manualUrl").value.trim();
+  const category = document.getElementById("manualCategory").value.trim();
+  const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
+  const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
   const asin = extractASIN(url) || "manual";
   const tag = "cazaoferta0e3-20";
 
   if (asin !== "manual") {
     url = `https://www.amazon.es/dp/${asin}?tag=${tag}`;
   }
-
-
-
-
-
-  const category = document.getElementById("manualCategory").value.trim();
-  const price = parseFloat(document.getElementById("manualPrice").value.trim()) || 0;
-  const discount = parseInt(document.getElementById("manualDiscount").value.trim()) || 0;
-  //const asin = extractASIN(url) || "manual";
 
   if (!title || !url || !category) {
     alert("Por favor completa todos los campos obligatorios.");
@@ -161,7 +153,8 @@ function saveManualProduct() {
     .then((data) => {
       if (data.success) {
         alert("Producto guardado manualmente.");
-        loadSavedLinks();
+        loadSavedLinks?.();
+        loadLinks?.();
       } else {
         alert("Error al guardar.");
       }
@@ -173,6 +166,7 @@ function loadSavedLinks() {
     .then(res => res.json())
     .then((links) => {
       const container = document.getElementById("savedLinks");
+      if (!container) return;
       container.innerHTML = "";
 
       links.forEach((link) => {
@@ -200,6 +194,7 @@ function deleteLink(id) {
       if (data.success) {
         alert("Producto eliminado");
         loadSavedLinks();
+        loadLinks();
       } else {
         alert("Error al eliminar");
       }
@@ -207,12 +202,13 @@ function deleteLink(id) {
 }
 
 function loadLinks() {
-  fetch("https://cazaofertas.onrender.com/public-links")
+  fetch(`${API}/public-links`)
     .then(res => res.json())
     .then((links) => {
-      const categoryFilter = document.getElementById("filterCategory").value.toLowerCase();
-      const discountFilter = parseInt(document.getElementById("filterDiscount").value || "0");
+      const categoryFilter = document.getElementById("filterCategory")?.value.toLowerCase() || "";
+      const discountFilter = parseInt(document.getElementById("filterDiscount")?.value || "0");
       const container = document.getElementById("linksContainer");
+      if (!container) return;
       container.innerHTML = "";
 
       links
@@ -237,18 +233,15 @@ function loadLinks() {
     });
 }
 
-
-// Exponer funciones globalmente para asegurar su disponibilidad
+// Registro de eventos y funciones
 window.login = login;
 window.logout = logout;
 window.searchProducts = searchProducts;
 window.saveManualProduct = saveManualProduct;
+window.importFromAmazonUrl = importFromAmazonUrl;
+window.saveImportedLink = saveImportedLink;
 
-// Ejecutar al cargar
 window.onload = () => {
-  checkSession();
-  document.getElementById("loginBtn")?.addEventListener("click", login);
-  document.getElementById("searchBtn")?.addEventListener("click", searchProducts);
-  document.getElementById("manualImportBtn")?.addEventListener("click", saveManualProduct);
+  checkSession?.();
   loadLinks();
 };
