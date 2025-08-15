@@ -80,58 +80,74 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
 
-// --- RUTAS PUBLICAS Y ADMIN PARA ENLACES (añade esto a server.js) ---
-
-// Lista pública (para index): solo los que deben ser visibles
+// --- Rutas públicas y admin para enlaces ---
 app.get("/public-links", (req, res) => {
-  // Ajusta el WHERE si quieres filtrar por stock/visibilidad
   db.all(
     "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
     [],
     (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error("public-links error:", err.message);
+        return res.status(500).json({ error: err.message });
+      }
       res.json(rows || []);
     }
   );
 });
 
-// Lista completa para el panel admin
 app.get("/admin-links", (req, res) => {
   db.all(
     "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
     [],
     (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error("admin-links error:", err.message);
+        return res.status(500).json({ error: err.message });
+      }
       res.json(rows || []);
     }
   );
 });
 
-// Guardar (tanto manual como import)
 app.post("/save-link", (req, res) => {
-  const { title, url, category, discount = 0, asin = "manual", price = 0, image = null } = req.body;
+  const {
+    title,
+    url,
+    category,
+    discount = 0,
+    asin = "manual",
+    price = 0,
+    image = null,
+  } = req.body;
+
   if (!title || !url || !category) {
     return res.status(400).json({ error: "Faltan datos obligatorios" });
   }
+
   db.run(
     "INSERT INTO links (title, url, category, discount, asin, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [title, url, category, discount, asin, price, image],
     (err) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error("save-link error:", err.message);
+        return res.status(500).json({ error: err.message });
+      }
       res.json({ success: true });
     }
   );
 });
 
-// Eliminar
 app.delete("/delete-link/:id", (req, res) => {
   db.run("DELETE FROM links WHERE id = ?", [req.params.id], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      console.error("delete-link error:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
     res.json({ success: this.changes > 0 });
   });
 });
 
-// Health/root opcional (evita HTML por defecto de Render)
+// Health para evitar HTML por defecto
 app.get("/", (_req, res) => {
   res.json({ ok: true, service: "cazaofertas-backend" });
 });
