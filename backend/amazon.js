@@ -1,7 +1,7 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const endpoint = "webservices.amazon.com";
+const endpoint = "webservices.amazon.es";
 const uri = "/paapi5/searchitems";
 const getUri = "/paapi5/getitems";
 
@@ -29,7 +29,7 @@ async function searchAmazonProducts(filters) {
     ],
     PartnerTag: process.env.ASSOCIATE_TAG,
     PartnerType: "Associates",
-    Marketplace: "www.amazon.com",
+    Marketplace: "www.amazon.es",
     ItemCount: 10,
     SearchIndex: filters.category || "All"
   };
@@ -79,7 +79,7 @@ async function validateProducts(asinList) {
     ],
     PartnerTag: process.env.ASSOCIATE_TAG,
     PartnerType: "Associates",
-    Marketplace: "www.amazon.com"
+    Marketplace: "www.amazon.es"
   };
 
   const headers = {
