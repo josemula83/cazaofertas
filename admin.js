@@ -182,3 +182,5 @@ window.onload = () => {
   document.getElementById("importBtn")?.addEventListener("click", importFromAmazonUrl);
   document.getElementById("manualSaveBtn")?.addEventListener("click", saveManualProduct);
 };
+
+

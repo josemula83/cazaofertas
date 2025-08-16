@@ -10,6 +10,7 @@ const app = express();
 
 const PORT = process.env.PORT || 10000;
 
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "..", "frontend")));
@@ -31,6 +32,8 @@ app.post("/login", (req, res) => {
     res.status(401).json({ success: false, message: "Unauthorized" });
   }
 });
+
+
 
 // 💾 Guardar nuevo producto
 app.post("/save-link", (req, res) => {
@@ -151,3 +154,5 @@ app.delete("/delete-link/:id", (req, res) => {
 app.get("/", (_req, res) => {
   res.json({ ok: true, service: "cazaofertas-backend" });
 });
+
+
