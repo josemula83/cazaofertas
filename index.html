@@ -1,43 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ofertas Amazon – Afiliados</title>
-    <!-- Tailwind CDN opcional si no tienes tu build -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-50 text-gray-900">
-    <header class="max-w-6xl mx-auto px-4 py-6">
-      <h1 class="text-2xl sm:text-3xl font-bold">Ofertas Amazon</h1>
-      <p class="text-gray-600">Encuentra chollos por categoría y descuento</p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CazaOfertas - Encuentra tus mejores descuentos en Amazon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{scroll-behavior:smooth}</style>
+</head>
+<body class="bg-gradient-to-b from-white to-gray-100 text-gray-900 font-sans">
+  <header class="bg-blue-800 text-white py-4 shadow">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <img src="logo-cazaofertas.png" alt="CazaOfertas logo" class="h-10"/>
+        <h1 class="text-2xl font-bold tracking-wide">CazaOfertas</h1>
+      </div>
+      <nav>
+        <a href="admin.html" class="text-white hover:underline text-sm">Admin</a>
+      </nav>
+    </div>
+  </header>
 
-    <main class="max-w-6xl mx-auto px-4 pb-16">
-      <!-- Filtros -->
-      <form class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end mb-6">
-        <div class="flex-1">
-          <label for="filterCategory" class="block text-sm font-medium mb-1">Categoría</label>
-          <select id="filterCategory" class="border p-2 rounded w-full sm:w-60">
-            <option value="">Todas las categorías</option>
-          </select>
-        </div>
-        <div>
-          <label for="filterDiscount" class="block text-sm font-medium mb-1">Descuento mínimo (%)</label>
-          <input id="filterDiscount" type="number" min="0" step="5" value="0" placeholder="0" class="border p-2 rounded w-full sm:w-40" />
-        </div>
-        <div>
-          <button id="filterBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Filtrar</button>
-        </div>
-      </form>
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl font-extrabold text-blue-900 mb-2">Encuentra las mejores ofertas de Amazon</h2>
+      <p class="text-gray-700">Nada más entrar verás todos los productos. Luego filtra por categoría o descuento.</p>
+    </section>
 
-      <!-- Contadores / estado -->
-      <div id="resultsInfo" class="text-sm text-gray-600 mb-3"></div>
+    <section class="bg-white rounded-xl shadow-md p-6 mb-10">
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <input id="filterCategory" type="text" placeholder="Categoría" class="border p-2 rounded w-full sm:w-60"/>
+        <input id="filterDiscount" type="number" placeholder="Descuento mínimo (%)" class="border p-2 rounded w-full sm:w-60"/>
+        <button id="filterBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">
+          Filtrar
+        </button>
+      </div>
+    </section>
 
-      <!-- Grid de productos -->
-      <div id="linksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </main>
+    <section id="linksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></section>
+  </main>
 
-    <script src="./index.js" type="module"></script>
-  </body>
+  <footer class="bg-blue-800 text-white py-6 text-center text-sm">
+    <p>© 2025 CazaOfertas.es | Proyecto personal sin fines comerciales.</p>
+    <p>Responsable: Jose Mula | <a href="mailto:contacto@cazaofertas.es" class="underline">contacto@cazaofertas.es</a></p>
+    <p>Participamos en el programa de afiliados de Amazon.</p>
+    <a href="politica.html" class="underline hover:text-gray-300">Política de privacidad</a>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
 </html>
