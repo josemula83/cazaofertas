@@ -78,6 +78,10 @@ setInterval(() => {
     .catch((err) => console.error("Auto-ping falló:", err));
 }, 5 * 60 * 1000);
 
+
+const createCategoriesRouter = require("./routes/categories");
+app.use(createCategoriesRouter(db));
+
 // 🚀 Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
