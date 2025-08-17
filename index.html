@@ -28,7 +28,12 @@
 
     <section class="bg-white rounded-xl shadow-md p-6 mb-10">
       <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <!-- antes
         <input id="filterCategory" type="text" placeholder="Categoría" class="border p-2 rounded w-full sm:w-60"/>
+         -->
+        <select id="filterCategory" class="border p-2 rounded w-full sm:w-60">
+          <option value="">Todas las categorías</option>
+        </select>
         <input id="filterDiscount" type="number" placeholder="Descuento mínimo (%)" class="border p-2 rounded w-full sm:w-60"/>
         <button id="filterBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded">
           Filtrar

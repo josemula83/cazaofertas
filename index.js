@@ -22,23 +22,23 @@ async function apiFetch(path, options = {}) {
   }
   throw lastErr || new Error("No hay API disponible");
 }
-
+  
 function renderLinks(links) {
-  const categoryFilter = (document.getElementById("filterCategory")?.value || "").toLowerCase();
+  const categoryFilter = document.getElementById("filterCategory")?.value || "";
   const discountFilter = parseInt(document.getElementById("filterDiscount")?.value || "0", 10) || 0;
   const container = document.getElementById("linksContainer");
   container.innerHTML = "";
 
   links
     .filter(l =>
-      (!categoryFilter || (l.category || "").toLowerCase().includes(categoryFilter)) &&
+      (!categoryFilter || (l.category || "") === categoryFilter) &&
       (parseInt(l.discount || 0, 10) >= discountFilter)
     )
     .forEach(link => {
       const card = document.createElement("div");
       card.className = "rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition duration-200";
       card.innerHTML = `
-        <img src="${link.image || 'https://via.placeholder.com/300x200?text=Producto'}" alt="${link.title}" class="w-full h-auto mb-2 rounded">
+        <img src="${link.image || 'https://via.placeholder.com/300x300?text=Producto'}" alt="${link.title}" class="w-full h-auto mb-2 rounded">
         <h2 class="font-semibold text-lg mb-2">${link.title}</h2>
         <a href="${link.url}" target="_blank" rel="nofollow sponsored" class="text-blue-600 hover:underline">Ver producto</a>
         <p class="text-sm text-gray-600 mt-1">Categoría: ${link.category || '-'} | Descuento: ${link.discount || 0}%</p>
@@ -46,6 +46,7 @@ function renderLinks(links) {
       container.appendChild(card);
     });
 }
+
 
 async function loadLinks() {
   try {
@@ -61,13 +62,40 @@ async function loadLinks() {
   }
 }
 
-window.onload = () => {
-  // 1) Cargar TODOS al inicio
-  loadLinks();
+async function loadCategories() {
+  try {
+    const cats = await apiFetch("/categories"); // usa tu helper con APIS
+    const sel = document.getElementById("filterCategory");
+    // Resetea y rellena
+    sel.innerHTML = `<option value="">Todas las categorías</option>` +
+      cats.map(c => `<option value="${c}">${c}</option>`).join("");
+  } catch (e) {
+    console.error("Error cargando categorías:", e);
+  }
+}
 
-  // 2) Permitir filtrar
-  document.querySelector('button[onclick="loadLinks()"]')?.addEventListener("click", (e) => {
+
+
+
+
+
+window.onload = () => {
+  // 1) Cargar categorías y productos al inicio
+  loadCategories().then(loadLinks);
+
+  // 2) Filtrar al hacer clic
+  document.getElementById("filterBtn")?.addEventListener("click", (e) => {
     e.preventDefault();
     loadLinks();
   });
+
+  // 3) Filtrar también al cambiar la categoría o al teclear descuento + Enter
+  document.getElementById("filterCategory")?.addEventListener("change", loadLinks);
+  document.getElementById("filterDiscount")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      loadLinks();
+    }
+  });
 };
+

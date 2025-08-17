@@ -156,3 +156,18 @@ app.get("/", (_req, res) => {
 });
 
 
+// GET /categories -> ["Auriculares", "Monitores", ...]
+app.get("/categories", (_req, res) => {
+  const sql = `
+    SELECT DISTINCT TRIM(category) AS category
+    FROM links
+    WHERE category IS NOT NULL AND TRIM(category) <> ''
+    ORDER BY category COLLATE NOCASE
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows.map(r => r.category));
+  });
+});
+
+
