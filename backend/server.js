@@ -1,177 +1,108 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const dotenv = require("dotenv");
+// server.js – Reemplazo completo con endpoint /categories y /public-links
+// Lista para usar en Render/local. Minimal, claro y extensible.
+
 const path = require("path");
-const db = require("./db");
+const express = require("express");
+const cors = require("cors");
+const sqlite3 = require("sqlite3").verbose();
 
-dotenv.config();
+// ────────────────────────────────────────────────────────────
+// Configuración
+// ────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+const DB_FILE = process.env.DB_FILE || path.join(__dirname, "data.sqlite");
+// Si quieres servir bajo prefijo (p. ej. "/api"), define API_BASE="/api"
+const API_BASE = process.env.API_BASE || ""; 
+
 const app = express();
-
-const PORT = process.env.PORT || 10000;
-
-
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "..", "frontend")));
+app.use(express.json());
 
-// 🟢 Ruta principal
-app.get("/", (req, res) => {
-  res.send("Servidor de CazaOfertas activo.");
-});
-
-// 🔐 Login básico
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  if (
-    username === process.env.ADMIN_USER &&
-    password === process.env.ADMIN_PASS
-  ) {
-    res.json({ success: true });
+// ────────────────────────────────────────────────────────────
+// Base de datos
+// ────────────────────────────────────────────────────────────
+const db = new sqlite3.Database(DB_FILE, (err) => {
+  if (err) {
+    console.error("[DB] Error abriendo base de datos:", err.message);
   } else {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    console.log(`[DB] Conectado a ${DB_FILE}`);
   }
 });
 
-
-
-// 💾 Guardar nuevo producto
-app.post("/save-link", (req, res) => {
-  const { title, url, category, discount, asin, price } = req.body;
-
-  if (!title || !url || !category || asin === undefined || price === undefined) {
-    return res.status(400).json({ error: "Faltan datos obligatorios" });
-  }
-
+// Crea la tabla si no existe (ajusta columnas según tu modelo)
+db.serialize(() => {
   db.run(
-    "INSERT INTO links (title, url, category, discount, asin, price) VALUES (?, ?, ?, ?, ?, ?)",
-    [title, url, category, discount, asin, price],
-    (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ success: true });
-    }
+    `CREATE TABLE IF NOT EXISTS links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      url TEXT,
+      image TEXT,
+      category TEXT,
+      discount INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`
   );
 });
 
-// 📥 Obtener todos los enlaces para administración
-app.get("/admin-links", (req, res) => {
-  db.all("SELECT * FROM links ORDER BY id DESC", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// ────────────────────────────────────────────────────────────
+// Rutas
+// ────────────────────────────────────────────────────────────
+
+// Healthcheck
+app.get(`${API_BASE}/healthz`, (_req, res) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
 });
 
-// ❌ Eliminar producto
-app.delete("/delete-link/:id", (req, res) => {
-  const id = req.params.id;
-  db.run("DELETE FROM links WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ success: true });
-  });
-});
-
-// 🔁 Auto-ping para mantener Render activo (sin usar node-fetch)
-setInterval(() => {
-  fetch("https://cazaofertas.onrender.com")
-    .then((res) => res.text())
-    .then(() => console.log("📡 Auto-ping exitoso"))
-    .catch((err) => console.error("Auto-ping falló:", err));
-}, 5 * 60 * 1000);
-
-
-const createCategoriesRouter = require("./routes/categories");
-app.use(createCategoriesRouter(db));
-
-// 🚀 Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-});
-
-// --- Rutas públicas y admin para enlaces ---
-app.get("/public-links", (req, res) => {
-  db.all(
-    "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
-    [],
-    (err, rows) => {
-      if (err) {
-        console.error("public-links error:", err.message);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(rows || []);
-    }
-  );
-});
-
-app.get("/admin-links", (req, res) => {
-  db.all(
-    "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
-    [],
-    (err, rows) => {
-      if (err) {
-        console.error("admin-links error:", err.message);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(rows || []);
-    }
-  );
-});
-
-app.post("/save-link", (req, res) => {
-  const {
-    title,
-    url,
-    category,
-    discount = 0,
-    asin = "manual",
-    price = 0,
-    image = null,
-  } = req.body;
-
-  if (!title || !url || !category) {
-    return res.status(400).json({ error: "Faltan datos obligatorios" });
-  }
-
-  db.run(
-    "INSERT INTO links (title, url, category, discount, asin, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [title, url, category, discount, asin, price, image],
-    (err) => {
-      if (err) {
-        console.error("save-link error:", err.message);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ success: true });
-    }
-  );
-});
-
-app.delete("/delete-link/:id", (req, res) => {
-  db.run("DELETE FROM links WHERE id = ?", [req.params.id], function (err) {
-    if (err) {
-      console.error("delete-link error:", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ success: this.changes > 0 });
-  });
-});
-
-// Health para evitar HTML por defecto
-app.get("/", (_req, res) => {
-  res.json({ ok: true, service: "cazaofertas-backend" });
-});
-
-
-// GET /categories -> ["Auriculares", "Monitores", ...]
-app.get("/categories", (_req, res) => {
+// Endpoint público para listar links (usado por el frontend)
+// GET /public-links  -> [{ id, title, url, image, category, discount, created_at }, ...]
+app.get(`${API_BASE}/public-links`, (_req, res) => {
   const sql = `
-    SELECT DISTINCT TRIM(category) AS category
+    SELECT id, title, url, image, category, discount, created_at
     FROM links
-    WHERE category IS NOT NULL AND TRIM(category) <> ''
-    ORDER BY category COLLATE NOCASE
+    ORDER BY id DESC
   `;
   db.all(sql, [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(rows.map(r => r.category));
+    res.json(rows || []);
   });
 });
 
+// (Opcional) Crear un link rápidamente
+// POST /links { title, url, image?, category?, discount? }
+app.post(`${API_BASE}/links`, (req, res) => {
+  const { title, url, image = null, category = null, discount = 0 } = req.body || {};
+  if (!title || !url) {
+    return res.status(400).json({ error: "'title' y 'url' son obligatorios" });
+  }
+  const sql = `INSERT INTO links (title, url, image, category, discount) VALUES (?, ?, ?, ?, ?)`;
+  const params = [title, url, image, category, parseInt(discount || 0, 10)];
+  db.run(sql, params, function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ id: this.lastID });
+  });
+});
 
+// ────────────────────────────────────────────────────────────
+// /categories (a partir de la tabla links) – para el desplegable
+// ────────────────────────────────────────────────────────────
+const createCategoriesRouter = require("./routes/categories");
+app.use(API_BASE, createCategoriesRouter(db));
+
+// ────────────────────────────────────────────────────────────
+// Errores
+// ────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+app.use((err, _req, res, _next) => {
+  console.error("[Error]", err);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+// ────────────────────────────────────────────────────────────
+// Arranque
+// ────────────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`[HTTP] Escuchando en http://localhost:${PORT}${API_BASE}`);
+});
