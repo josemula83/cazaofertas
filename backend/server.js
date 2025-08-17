@@ -1,4 +1,4 @@
-// server.js – Reemplazo completo con endpoint /categories y /public-links
+// server.js – Reemplazo completo con /categories inline (sin require externo)
 // Lista para usar en Render/local. Minimal, claro y extensible.
 
 const path = require("path");
@@ -83,10 +83,20 @@ app.post(`${API_BASE}/links`, (req, res) => {
 });
 
 // ────────────────────────────────────────────────────────────
-// /categories (a partir de la tabla links) – para el desplegable
+// /categories inline (sin require)
 // ────────────────────────────────────────────────────────────
-const createCategoriesRouter = require("./routes/categories");
-app.use(API_BASE, createCategoriesRouter(db));
+app.get(`${API_BASE}/categories`, (_req, res) => {
+  const sql = `
+    SELECT DISTINCT TRIM(category) AS category
+    FROM links
+    WHERE category IS NOT NULL AND TRIM(category) <> ''
+    ORDER BY category COLLATE NOCASE
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json((rows || []).map(r => r.category));
+  });
+});
 
 // ────────────────────────────────────────────────────────────
 // Errores
