@@ -84,19 +84,81 @@ app.listen(PORT, () => {
 });
 
 // --- Rutas públicas y admin para enlaces ---
+//app.get("/public-links", (req, res) => {
+//  db.all(
+//    "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
+//    [],
+//    (err, rows) => {
+//      if (err) {
+//        console.error("public-links error:", err.message);
+//        return res.status(500).json({ error: err.message });
+//      }
+//      res.json(rows || []);
+//    }
+//  );
+//});
+
+// ========================
+// /public-links paginado con filtros y orden
+// GET /public-links?page=1&limit=12&category=zapatillas&minDiscount=20&sort=discount_desc|discount_asc
+// ========================
 app.get("/public-links", (req, res) => {
-  db.all(
-    "SELECT id, title, url, category, discount, price, image FROM links ORDER BY id DESC",
-    [],
-    (err, rows) => {
-      if (err) {
-        console.error("public-links error:", err.message);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(rows || []);
+  try {
+    const page = Math.max(1, parseInt(req.query.page || "1", 10));
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || "12", 10)));
+    const offset = (page - 1) * limit;
+
+    const category = (req.query.category || "").toLowerCase().trim();
+    const minDiscount = parseInt(req.query.minDiscount || "0", 10);
+
+    // sort: discount_desc (default) | discount_asc
+    const sort = (req.query.sort || "discount_desc").toLowerCase();
+    let orderBy = "ORDER BY discount DESC, id DESC";
+    if (sort === "discount_asc") orderBy = "ORDER BY discount ASC, id DESC";
+
+    let where = "WHERE 1=1";
+    const params = [];
+
+    if (category) {
+      where += " AND LOWER(category) LIKE ?";
+      params.push(`%${category}%`);
     }
-  );
+    if (!isNaN(minDiscount) && minDiscount > 0) {
+      where += " AND discount >= ?";
+      params.push(minDiscount);
+    }
+
+    const countSql = `SELECT COUNT(*) AS total FROM links ${where}`;
+    db.get(countSql, params, (errCount, countRow) => {
+      if (errCount) return res.status(500).json({ error: errCount.message });
+
+      const total = countRow?.total || 0;
+      const totalPages = Math.max(1, Math.ceil(total / limit));
+
+      const listSql = `
+        SELECT id, title, url, category, discount, price, image
+        FROM links
+        ${where}
+        ${orderBy}
+        LIMIT ? OFFSET ?`;
+      db.all(listSql, [...params, limit, offset], (errList, rows) => {
+        if (errList) return res.status(500).json({ error: errList.message });
+
+        res.json({
+          success: true,
+          page,
+          limit,
+          total,
+          totalPages,
+          data: rows,
+        });
+      });
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
+
 
 app.get("/admin-links", (req, res) => {
   db.all(
@@ -153,6 +215,24 @@ app.delete("/delete-link/:id", (req, res) => {
 // Health para evitar HTML por defecto
 app.get("/", (_req, res) => {
   res.json({ ok: true, service: "cazaofertas-backend" });
+});
+
+
+// ========================
+// GET /categories  ->  ["electronics","hogar","manual", ...]
+// ========================
+app.get("/categories", (req, res) => {
+  const sql = `
+    SELECT DISTINCT TRIM(category) AS category
+    FROM links
+    WHERE category IS NOT NULL AND TRIM(category) <> ''
+    ORDER BY LOWER(category) ASC
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const cats = rows.map(r => r.category);
+    res.json({ success: true, categories: cats });
+  });
 });
 
 
